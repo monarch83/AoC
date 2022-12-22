@@ -26,18 +26,10 @@ for (i in 1:nrow(day8_mtr)) {
   for (j in 1:ncol(day8_mtr)) {
     
     # Edge are always visible
-    if (i == 1) {
-      day8_part1[1, ] <- TRUE
-    }
-    else if (j == 1) {
-      day8_part1[, 1] <- TRUE
-    }
-    else if (i == nrow(day8_mtr)) {
-      day8_part1[nrow(day8_mtr), ] <- TRUE
-    }
-    else if (j == nrow(day8_mtr)) {
-      day8_part1[, nrow(day8_mtr)] <- TRUE
-    }
+    if (i == 1) day8_part1[1, ] <- TRUE
+    else if (j == 1) day8_part1[, 1] <- TRUE
+    else if (i == nrow(day8_mtr)) day8_part1[nrow(day8_mtr), ] <- TRUE
+    else if (j == nrow(day8_mtr)) day8_part1[, nrow(day8_mtr)] <- TRUE
     else {
       day8_part1[i,j] <- any(
                           # right
