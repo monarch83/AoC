@@ -13,6 +13,8 @@ library(gganimate)
 library(dplyr)
 library(plotly)
 library(stringr)
+library(gifski)
+library(ggimage)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -24,7 +26,9 @@ ui <- fluidPage(
     ),
     mainPanel(
       tabsetPanel(
-        tabPanel("Gif",imageOutput("gifplot"))
+        tabPanel("Gif",imageOutput("gifplot")),
+        tabPanel("Gif2", imageOutput("gifplot2")),
+        tabPanel("Gif3", imageOutput("gifplot3"))
       )
     )
   )
@@ -131,7 +135,8 @@ server <- function(input, output) {
     # This file will be removed later by renderImage
     outfile <- tempfile(fileext='.gif')
     
-    anim_save("outfile.gif", animate(g)) # New
+    save_animation(animate(g, renderer = gifski_renderer()), "outfile.gif") # New
+    #anim_save("outfile.gif", animation = g)
     
     # Return a list containing the filename
     list(src = "outfile.gif",
@@ -141,6 +146,108 @@ server <- function(input, output) {
          # alt = "This is alternate text"
     )
 
+  }, deleteFile = TRUE)
+  
+  output$gifplot2=renderImage({
+    
+    req(theinput())
+    
+    # Split into Vector
+    split_x <- unlist(strsplit(as.character(theinput()$V1), split=character(0)))
+    
+    # Convert to Numeric Values [Up Floor = 1, Down Floor = -1]
+    split_num <- ifelse(split_x == "(", 1, 
+                        ifelse(split_x == ")", -1, NA))
+    
+    split_num <- data.frame(split_num)
+    colnames(split_num) <- "parenthesis"
+    
+    split_num <- split_num %>%
+      mutate(floor_pos = cumsum(parenthesis),
+             present_num = row_number(),
+             image = "www/santa.jpeg")
+    
+    p = ggplot(split_num, aes(x=present_num, y=floor_pos, image=image)) +
+      geom_point() +
+      geom_image() +
+      theme_minimal() +
+      transition_manual(present_num) 
+    
+    animate(
+      plot = p, 
+      duration=10,
+      end_pause = 30
+    )
+    
+    # A temp file to save the output.
+    # This file will be removed later by renderImage
+    outfile <- tempfile(fileext='.gif')
+    
+    save_animation(animate(p, renderer = gifski_renderer()), "outfile2.gif") # New
+    #anim_save("outfile.gif", animation = g)
+    
+    # Return a list containing the filename
+    list(src = "outfile2.gif",
+         contentType = 'image/gif'
+         # width = 400,
+         # height = 300,
+         # alt = "This is alternate text"
+    )
+    
+  }, deleteFile = TRUE)
+  
+  output$gifplot3=renderImage({
+    
+    req(theinput())
+    
+    # Split into Vector
+    split_x <- unlist(strsplit(as.character(theinput()$V1), split=character(0)))
+    
+    # Convert to Numeric Values [Up Floor = 1, Down Floor = -1]
+    split_num <- ifelse(split_x == "(", 1, 
+                        ifelse(split_x == ")", -1, NA))
+    
+    split_num <- data.frame(split_num)
+    colnames(split_num) <- "parenthesis"
+    
+    split_num <- split_num %>%
+      mutate(floor_pos = cumsum(parenthesis),
+             present_num = row_number(),
+             image = "www/santa.jpeg")
+    
+    q = ggplot(split_num, aes(x=0, y=floor_pos, label=floor_pos,image=image)) +
+      geom_point() +
+      geom_image(size=.1) +
+      geom_text(hjust=0, vjust=1, position = position_nudge(x=.25),size=15) +
+      theme_minimal() +
+      ylab("Floor") +
+      scale_x_continuous(limits = c(-.5, 1)) +
+      theme(axis.title.x=element_blank(),
+            axis.text.x=element_blank(),
+            axis.ticks.x=element_blank()) +
+      transition_manual(present_num) 
+    
+    animate(
+      plot = q, 
+      duration=10,
+      end_pause = 30
+    )
+    
+    # A temp file to save the output.
+    # This file will be removed later by renderImage
+    outfile <- tempfile(fileext='.gif')
+    
+    save_animation(animate(q, renderer = gifski_renderer()), "outfile3.gif") # New
+    #anim_save("outfile.gif", animation = g)
+    
+    # Return a list containing the filename
+    list(src = "outfile3.gif",
+         contentType = 'image/gif'
+         # width = 400,
+         # height = 300,
+         # alt = "This is alternate text"
+    )
+    
   }, deleteFile = TRUE)
   
   output$postload=renderUI({
@@ -153,6 +260,7 @@ server <- function(input, output) {
   
   
 }
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)

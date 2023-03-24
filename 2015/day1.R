@@ -6,7 +6,7 @@
 library(stringr)
 
 # Read Puzzle Input
-day1_data <- read.table(file = "~/AoC/2015/data/day1_data")
+day1_data <- read.table(file = "AoC/2015/data/day1_data")
 
 # Compute Total # of parenthesis 
 total <- nchar(as.character(day1_data$V1))
@@ -33,7 +33,7 @@ rm(list=ls())
 library(stringr)
 
 # Read Puzzle Input
-day1_data <- read.table(file = "~/AoC/2015/data/day1_data")
+day1_data <- read.table(file = "AoC/2015/data/day1_data")
 
 # Split into Vector
 split_x <- unlist(strsplit(as.character(day1_data$V1), split=character(0)))
@@ -76,6 +76,8 @@ g <-
        y = "Floor in the Apartment",
        x = "Number of Present")
 
-g +
+g <- g +
   transition_reveal(present_num) 
+
+anim_save("AoC/2015/gifs_viz/day1.gif", animation = last_animation())
 
