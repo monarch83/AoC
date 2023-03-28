@@ -97,9 +97,10 @@ df_long <- df_long %>%
   mutate(id = (y_cat + row_number()/10))
 
 
-g <- ggplot(df_long, aes(x_cat, id, color = color_grp, label = as.character(calories))) +
+g <- ggplot(df_long, aes(x_cat, factor(id), color = color_grp, label = as.character(calories))) +
   geom_text(size = 1, hjust = 0) +
-  scale_y_reverse(breaks = seq(1, 16, by=1), limits = c(16,1)) +
+  #geom_text(max(df_long$sumcal, na.rm = TRUE), size = 5 , color="red") + 
+  scale_y_discrete() +
   scale_x_continuous(breaks = seq(1, 16, by=1), limits = c(1,16)) +
   theme(axis.text.y = element_blank(),
         axis.text.x = element_blank(),
@@ -127,7 +128,7 @@ g <- g +
   transition_time(id) +
   shadow_mark()
 
-animate(g, end_pause = 15, width=8, height=12, units="in", res = 300)
+animate(g, end_pause = 15, width=8, height=14, units="in", res = 300)
 
 anim_save("AoC/2022/gifs_viz/day1.gif", animation = last_animation())
 
