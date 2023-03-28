@@ -90,7 +90,7 @@ df_long <- df_long %>%
 
 
 g <- ggplot(df_long, aes(x_cat, id, color = color_grp, label = as.character(calories))) +
-  geom_text(size = 3, hjust = 0) +
+  geom_text(size = 2, hjust = 0) +
   scale_y_reverse(breaks = seq(1, 32, by=1), limits = c(32,1)) +
   scale_x_continuous(breaks = seq(1, 8, by=1), limits = c(1,8)) +
   theme(axis.text.y = element_blank(),
@@ -119,6 +119,6 @@ g <- g +
   transition_time(id) +
   shadow_mark()
 
-animate(g, end_pause = 30, width=18, height=24, units="in", res = 300)
+animate(g, end_pause = 30, width=10, height=24, units="in", res = 300)
 
 anim_save("AoC/2022/gifs_viz/day1.gif", animation = last_animation())
