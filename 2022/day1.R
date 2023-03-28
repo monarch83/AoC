@@ -53,43 +53,72 @@ df <- df %>%
   
 df$sum <- rowSums(df[, 1:15], na.rm = TRUE)
 
-df <- df %>% 
-  unite(., col = "New.Col", X2:X16, na.rm=TRUE, sep = ",")
+# Make dataset LONG
+df_long <- df %>%
+  pivot_longer(cols = c(X2:X16, "sum"),
+               names_prefix = "Elf",
+               values_to = "calories",
+               values_drop_na = TRUE)
 
-df <- df %>%
-  mutate(colcat = 1,
-         sumcat = 1.4)
+df_long <- df_long %>%
+  mutate(x_cat = case_when(
+    elf %in% c(1:32) ~ 1,
+    elf %in% c(33:64) ~ 2,
+    elf %in% c(65:96) ~ 3,
+    elf %in% c(97:128) ~ 4,
+    elf %in% c(129:160) ~ 5,
+    elf %in% c(161:192) ~ 6,
+    elf %in% c(193:224) ~ 7,
+    elf %in% c(225:256) ~ 8))
 
-df <- df %>%
-  mutate(maxcal = ifelse(sum == max(df$sum), max(df$sum), NA))
+dummy <- data.frame(elf = c(1:256), y_cat = rep(1:32, 8))
 
-g <- ggplot(df, aes(colcat, elf, label = New.Col)) +
-  geom_text(size = 1, hjust = 0) +
-  scale_y_continuous(breaks = seq(1, 256, by=1), limits = c(1,256)) +
-  xlim(1, 1.5) 
-  
-g <- g +
-  geom_text(aes(sumcat, elf, label = sum), size = 1, hjust = 0, color = "blue") +
-  geom_text(aes(sumcat, elf, label = maxcal), size = 1, hjust = 0, color = "red") +
-  theme(axis.text.y = element_text(size=3),
+df_long <- df_long %>%
+  left_join(dummy, by = c("elf"))
+
+df_long <- df_long %>%
+  mutate(sumcal = ifelse(name == "sum", calories, NA),
+         category = as.numeric(str_extract(name, "[0-9]+")))
+
+df_long <- df_long %>%
+  mutate(category = ifelse(is.na(category), 16, category),
+         color_grp = as.factor(ifelse(category != 16, 1, 2)))
+
+df_long <- df_long %>%
+  group_by(elf) %>%
+  mutate(id = (y_cat + row_number()/10))
+
+
+g <- ggplot(df_long, aes(x_cat, id, color = color_grp, label = as.character(calories))) +
+  geom_text(size = 3, hjust = 0) +
+  scale_y_reverse(breaks = seq(1, 32, by=1), limits = c(32,1)) +
+  scale_x_continuous(breaks = seq(1, 8, by=1), limits = c(1,8)) +
+  theme(axis.text.y = element_blank(),
         axis.text.x = element_blank(),
+        axis.title = element_blank(),
         panel.background = element_blank(),
         panel.border = element_blank(),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        axis.title.x = element_blank(),
-        axis.ticks.x = element_blank()
-        ) 
+        axis.ticks = element_blank(),
+        legend.position = "none"
+        )  +
+  scale_color_manual(values = c("black", "red")) 
 
 g
 
-pdf(file="AoC/2022/gifs_viz/day1.pdf",
-    width = 8,
-    height=22,
-    bg = "white",
-    paper = "legal")
-plot(g)
-dev.off()
+# pdf(file="AoC/2022/gifs_viz/day1.pdf",
+#     width = 8,
+#     height=22,
+#     bg = "white",
+#     paper = "legal")
+# plot(g)
+# dev.off()
 
 g <- g +
-  transition_reveal(elf) 
+  transition_time(id) +
+  shadow_mark()
+
+animate(g, end_pause = 30, width=18, height=24, units="in", res = 300)
+
+anim_save("AoC/2022/gifs_viz/day1.gif", animation = last_animation())
