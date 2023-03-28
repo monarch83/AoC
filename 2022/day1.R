@@ -62,16 +62,24 @@ df_long <- df %>%
 
 df_long <- df_long %>%
   mutate(x_cat = case_when(
-    elf %in% c(1:32) ~ 1,
-    elf %in% c(33:64) ~ 2,
-    elf %in% c(65:96) ~ 3,
-    elf %in% c(97:128) ~ 4,
-    elf %in% c(129:160) ~ 5,
-    elf %in% c(161:192) ~ 6,
-    elf %in% c(193:224) ~ 7,
-    elf %in% c(225:256) ~ 8))
+    elf %in% c(1:16) ~ 1,
+    elf %in% c(17:32) ~ 2,
+    elf %in% c(33:48) ~ 3,
+    elf %in% c(49:64) ~ 4,
+    elf %in% c(65:80) ~ 5,
+    elf %in% c(81:96) ~ 6,
+    elf %in% c(97:112) ~ 7,
+    elf %in% c(113:128) ~ 8,
+    elf %in% c(129:144) ~ 9,
+    elf %in% c(145:160) ~ 10,
+    elf %in% c(161:176) ~ 11,
+    elf %in% c(177:192) ~ 12,
+    elf %in% c(193:208) ~ 13,
+    elf %in% c(209:224) ~ 14,
+    elf %in% c(225:240) ~ 15,
+    elf %in% c(241:256) ~ 16))
 
-dummy <- data.frame(elf = c(1:256), y_cat = rep(1:32, 8))
+dummy <- data.frame(elf = c(1:256), y_cat = rep(1:16, 16))
 
 df_long <- df_long %>%
   left_join(dummy, by = c("elf"))
@@ -91,8 +99,8 @@ df_long <- df_long %>%
 
 g <- ggplot(df_long, aes(x_cat, id, color = color_grp, label = as.character(calories))) +
   geom_text(size = 2, hjust = 0) +
-  scale_y_reverse(breaks = seq(1, 32, by=1), limits = c(32,1)) +
-  scale_x_continuous(breaks = seq(1, 8, by=1), limits = c(1,8)) +
+  scale_y_reverse(breaks = seq(1, 16, by=1), limits = c(16,1)) +
+  scale_x_continuous(breaks = seq(1, 16, by=1), limits = c(1,16)) +
   theme(axis.text.y = element_blank(),
         axis.text.x = element_blank(),
         axis.title = element_blank(),
@@ -119,6 +127,7 @@ g <- g +
   transition_time(id) +
   shadow_mark()
 
-animate(g, end_pause = 30, width=10, height=24, units="in", res = 300)
+animate(g, end_pause = 15, width=12, height=30, units="in", res = 300)
 
 anim_save("AoC/2022/gifs_viz/day1.gif", animation = last_animation())
+
