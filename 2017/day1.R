@@ -23,6 +23,7 @@ df <- data.frame(day1_data, day1_data_lag)
 df <- df %>%
   mutate(match = ifelse(day1_data == day1_data_lag, day1_data, NA),
          matchfl = ifelse(day1_data == day1_data_lag, 1, 0))
+sum(df$match, na.rm=TRUE)
 
 # Part 2 ---- 
 #day1_data <- c("12131415")
