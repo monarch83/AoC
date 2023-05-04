@@ -11,7 +11,7 @@ library(dplyr)
 # Read Puzzle Input
 day1_data <- readLines("AoC/2017/data/day1_data")
 
-day1_data <- unlist(strsplit(as.character(day1_data), split=character(0)))
+#day1_data <- unlist(strsplit(as.character(day1_data), split=character(0)))
 
 #day1_data <- c("11211")
 day1_data <- as.numeric(unlist(strsplit(as.character(day1_data), split=character(0))))
