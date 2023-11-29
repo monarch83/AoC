@@ -5,6 +5,7 @@
 # How many measurements are larger than the previous measurement?
 
 library(stringr)
+library(dplyr)
 
 # Read Puzzle Input
 day1_data <- read.table(file = "~/AoC/2021/data/day1_data", blank.lines.skip=F)
@@ -20,9 +21,14 @@ cat(paste0("How many measurments are larger than the previous measurments: ", ta
 
 day1_data <- day1_data %>%
   mutate(lead_1 = lead(V1, n=1),
-         lead_2 = lead(V1, n=2),
-         roll3_sum = rowSums(select(., "V1", "lead_1", "lead_2")),
-         lag2_prev = lag(roll3_sum),
+         lead_2 = lead(V1, n=2))
+
+day1_data <- day1_data %>%
+  rowwise() %>%
+  mutate(roll3_sum = sum(V1, lead_1, lead_2, na.rm = T))
+
+day1_data <- day1_data %>%
+  mutate(lag2_prev = lag(roll3_sum),
          inc2_fl = ifelse(roll3_sum > lag2_prev, "Y", "N"))
 
 cat(paste0("How many sums are larger than the previous sum?: ", table(day1_data$inc2_fl)[2]))
